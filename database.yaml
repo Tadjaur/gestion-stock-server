@@ -1,0 +1,5 @@
+username: twork
+password: smarted_db_pass
+host: localhost
+port: 5432
+databaseName: gestion_stock
