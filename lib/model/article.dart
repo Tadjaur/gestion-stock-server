@@ -9,10 +9,11 @@ class Article extends ManagedObject<_Article> implements _Article {
   void willInsert() {
     createdAt = DateTime.now().toUtc();
   }
-   @override
+
+  @override
   Map<String, dynamic> asMap() {
     final map = super.asMap();
-    if(map["category"] != null){
+    if (map["category"] != null) {
       map["categoryID"] = map["category"]["id"];
     }
     return map;

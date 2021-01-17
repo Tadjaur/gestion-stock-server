@@ -7,6 +7,18 @@ class Opperation extends ManagedObject<_Opperation> implements _Opperation {
   void willInsert() {
     createdAt = DateTime.now().toUtc();
   }
+
+  @override
+  Map<String, dynamic> asMap() {
+    final map = super.asMap();
+    if (map["article"] != null) {
+      map["articleID"] = map["article"]["id"];
+    }
+    if (map["store"] != null) {
+      map["storeID"] = map["store"]["id"];
+    }
+    return map;
+  }
 }
 
 class _Opperation {

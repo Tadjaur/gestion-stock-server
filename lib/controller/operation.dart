@@ -14,28 +14,43 @@ class OperationController extends ResourceController {
 
   Future<Response> getAllStock(Request request) async {
     final stocks = await Query<Stock>(_context).fetch();
-    final extra = <String, Map>{}; // {storeid: {count: x, c1: {}, c2: {}, a: {}}}
+    final extra =
+        <String, Map>{}; // {storeid: {count: x, c1: {}, c2: {}, a: {}}}
     for (var stock in stocks) {
       final article = await (Query<Article>(_context)
             ..where((x) => x.id).equalTo(stock.article.id)
             ..join(object: (e) => e.category))
           .fetchOne();
       if (article != null) {
-        extra[stock.store.id.toString()] ??= {"count": 0, "c1": {}, "c2": {}, "a": {}};
+        extra[stock.store.id.toString()] ??= {
+          "count": 0,
+          "c1": {},
+          "c2": {},
+          "a": {}
+        };
         extra[stock.store.id.toString()]["count"] += stock.count;
-        extra[stock.store.id.toString()]["a"][stock.article.id.toString()] ??= 0;
-        extra[stock.store.id.toString()]["c1"][article.category.parent.id.toString()] ??= 0;
-        extra[stock.store.id.toString()]["c2"][article.category.id.toString()] ??= 0;
-        extra[stock.store.id.toString()]["a"][stock.article.id.toString()] += stock.count;
-        extra[stock.store.id.toString()]["c1"][article.category.parent.id.toString()] += stock.count;
-        extra[stock.store.id.toString()]["c2"][article.category.id.toString()] += stock.count;
+        extra[stock.store.id.toString()]["a"][stock.article.id.toString()] ??=
+            0;
+        extra[stock.store.id.toString()]["c1"]
+            [article.category.parent.id.toString()] ??= 0;
+        extra[stock.store.id.toString()]["c2"]
+            [article.category.id.toString()] ??= 0;
+        extra[stock.store.id.toString()]["a"][stock.article.id.toString()] +=
+            stock.count;
+        extra[stock.store.id.toString()]["c1"]
+            [article.category.parent.id.toString()] += stock.count;
+        extra[stock.store.id.toString()]["c2"]
+            [article.category.id.toString()] += stock.count;
       }
     }
     return Response.ok(extra);
   }
 
   Future<Response> listOperation(Request request) async {
-    final operations = await Query<Opperation>(_context).fetch();
+    final operations = await (Query<Opperation>(_context)
+          ..join(object: (x) => x.store)
+          ..join(object: (x) => x.article))
+        .fetch();
     return Response.ok(operations);
   }
 
