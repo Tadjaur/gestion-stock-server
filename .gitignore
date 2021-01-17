@@ -11,4 +11,6 @@ workspace.xml
 Dart_Packages.xml
 .DS_Store
 .idea/
-*.aqueduct.pid
+*.aqueduct.pidconfig.yaml
+database.yaml
+.log/
