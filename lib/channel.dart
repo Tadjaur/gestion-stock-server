@@ -42,7 +42,7 @@ class GestionStockServerChannel extends ApplicationChannel {
     router.route("/gestion_stock/category/add").linkFunction(CategoryController(context).addCategory);
     router.route("/gestion_stock/category/get").linkFunction(CategoryController(context).getAllCategory);
     router.route("/gestion_stock/operation/add").linkFunction(OperationController(context).addOperation);
-    router.route("/gestion_stock/operation/list").linkFunction(OperationController(context).listOperation);
+    router.route("/gestion_stock/operation/get").linkFunction(OperationController(context).listOperation);
     router.route("/gestion_stock/stock/get").linkFunction(OperationController(context).getAllStock);
     router.route("/gestion_stock/store/add").linkFunction(StoreController(context).addStore);
     router.route("/gestion_stock/store/get").linkFunction(StoreController(context).getAllStores);
