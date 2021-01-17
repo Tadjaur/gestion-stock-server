@@ -7,6 +7,14 @@ class Category extends ManagedObject<_Category> implements _Category {
   void willInsert() {
     createdAt = DateTime.now().toUtc();
   }
+  @override
+  Map<String, dynamic> asMap() {
+    final map = super.asMap();
+    if(map["parent"] != null){
+      map["parentID"] = map["parent"]["id"];
+    }
+    return map;
+  }
 }
 
 class _Category {

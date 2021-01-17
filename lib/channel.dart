@@ -1,5 +1,6 @@
 import 'package:gestion_stock_server/controller/article.dart';
 import 'package:gestion_stock_server/controller/category.dart';
+import 'package:gestion_stock_server/controller/operation.dart';
 import 'package:gestion_stock_server/controller/store.dart';
 import 'package:gestion_stock_server/model/stock.dart';
 
@@ -36,12 +37,14 @@ class GestionStockServerChannel extends ApplicationChannel {
   @override
   Controller get entryPoint {
     final router = Router();
-    router.route("/gestion_stock/store/get").linkFunction(StoreController(context).getAllStores);
-    router.route("/gestion_stock/store/add").linkFunction(StoreController(context).addStore);
-    router.route("/gestion_stock/article/get").linkFunction(ArticleController(context).getAllArticles);
     router.route("/gestion_stock/article/add").linkFunction(ArticleController(context).addArticle);
-    router.route("/gestion_stock/category/get").linkFunction(CategoryController(context).getAllCategory);
+    router.route("/gestion_stock/article/get/:categoryID").linkFunction(ArticleController(context).getAllArticles);
     router.route("/gestion_stock/category/add").linkFunction(CategoryController(context).addCategory);
+    router.route("/gestion_stock/category/get").linkFunction(CategoryController(context).getAllCategory);
+    router.route("/gestion_stock/operation/add").linkFunction(OperationController(context).addOperation);
+    router.route("/gestion_stock/stock/get").linkFunction(OperationController(context).getAllStock);
+    router.route("/gestion_stock/store/add").linkFunction(StoreController(context).addStore);
+    router.route("/gestion_stock/store/get").linkFunction(StoreController(context).getAllStores);
     router.route("*").linkFunction((Request r)async {
       print(r.raw.uri.path);
       return Response.notFound();

@@ -15,6 +15,7 @@ class ArticleController extends ResourceController {
     final articlesQuery = Query<Article>(_context)
       ..where((x) => x.category.id).equalTo(categoryID);
     final articles = await articlesQuery.fetch();
+    print(articles);
     return Response.ok(articles);
   }
 
@@ -35,8 +36,7 @@ class ArticleController extends ResourceController {
                   .equalTo(int.tryParse(param['categoryID'].toString())))
             .fetchOne()
         ..values.mark = param['mark'] as String;
-      await forumQuery.insert();
-      return Response.ok("Inserted");
+      return Response.ok(await forumQuery.insert());
     } else
       return Response.badRequest();
   }
@@ -47,6 +47,7 @@ class ArticleController extends ResourceController {
       "mark",
       "description",
       "categoryID",
+      "image"
     ];
     final bodyStream =
         Stream.fromIterable([await request.body.decode<List<int>>()]);

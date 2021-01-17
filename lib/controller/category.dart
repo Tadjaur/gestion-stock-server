@@ -11,10 +11,17 @@ class CategoryController extends ResourceController {
 
   @Operation.get()
   Future<Response> getAllCategory(Request request) async {
-    final coursesQuery = Query<Category>(_context)
-      ..where((x) => x.parent).isNull()
-      ..join(set: (x) => x.children);
-    final courses = await coursesQuery.fetch();
+    final parentID =
+        int.tryParse(request.raw.uri.queryParameters["parentID"].toString());
+    final qry = Query<Category>(_context);
+    if (parentID == null) {
+      qry.where((x) => x.parent).isNull();
+    }else{
+      qry.where((x) => x.parent.id).equalTo(parentID);
+    }
+    qry.join(set: (x) => x.children);
+    final courses = await qry.fetch();
+    print(courses);
     return Response.ok(courses);
   }
 
@@ -34,7 +41,9 @@ class CategoryController extends ResourceController {
                   .equalTo(int.tryParse(param['parentID'].toString())))
             .fetchOne();
       }
-      return Response.ok(await storeQuery.insert());
+      final res = await storeQuery.insert();
+      print(res);
+      return Response.ok(res);
     } else {
       return Response.badRequest();
     }

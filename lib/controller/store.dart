@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:gestion_stock_server/gestion_stock_server.dart';
+import 'package:gestion_stock_server/model/article.dart';
+import 'package:gestion_stock_server/model/stock.dart';
 import 'package:gestion_stock_server/model/store.dart';
 import 'package:mime/mime.dart';
 
@@ -12,8 +14,29 @@ class StoreController extends ResourceController {
   Future<Response> getAllStores(Request request) async {
     final storesQuery = Query<Store>(_context)..join(set: (x) => x.stocks);
     final stores = await storesQuery.fetch();
-    print(stores);
     return Response.ok(stores);
+  }
+
+  Future<Response> getAllStock(Request request) async {
+    final stocks = await Query<Stock>(_context).fetch();
+    final extra = {"store": {}, "c1": {}, "c2": {}, "a": {}};
+    for (var stock in stocks) {
+      final article = await (Query<Article>(_context)
+            ..where((x) => x.id).equalTo(stock.article.id)
+            ..join(object: (e) => e.category))
+          .fetchOne();
+      if (article != null) {
+        extra["a"][stock.article.id] ??= 0;
+        extra["c1"][article.category.parent.id] ??= 0;
+        extra["c2"][article.category.id] ??= 0;
+        extra["store"][stock.store.id] ??= 0;
+        extra["a"][stock.article.id] += stock.count;
+        extra["c1"][article.category.parent.id] += stock.count;
+        extra["c2"][article.category.id] += stock.count;
+        extra["store"][stock.store.id] += stock.count;
+      }
+    }
+    return Response.ok(extra);
   }
 
   Future<Response> addStore(Request request) async {
