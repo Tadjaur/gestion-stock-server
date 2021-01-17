@@ -34,6 +34,11 @@ class OperationController extends ResourceController {
     return Response.ok(extra);
   }
 
+  Future<Response> listOperation(Request request) async {
+    final operations = await Query<Opperation>(_context).fetch();
+    return Response.ok(operations);
+  }
+
   Future<Response> addOperation(Request request) async {
     final param = await forumParamOfMultiPart(request);
     if (param != null) {
