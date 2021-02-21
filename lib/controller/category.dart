@@ -16,7 +16,7 @@ class CategoryController extends ResourceController {
     final qry = Query<Category>(_context);
     if (parentID == null) {
       qry.where((x) => x.parent).isNull();
-    }else{
+    } else {
       qry.where((x) => x.parent.id).equalTo(parentID);
     }
     qry.join(set: (x) => x.children);
@@ -95,5 +95,18 @@ class CategoryController extends ResourceController {
       }
     }
     return user;
+  }
+
+  FutureOr<RequestOrResponse> deleteCategory(Request request) async {
+    final parentID =
+        int.tryParse(request.raw.uri.queryParameters["id"].toString());
+    final pass = request.raw.uri.queryParameters["pass".toString()];
+    if (parentID == null || pass == null)
+      return Response.badRequest(
+          body: "the query 'id' and 'pass' must not be empty");
+    if (pass != GestionStockServerChannel.BAD_ACCESS_PASS)
+      return Response.badRequest(body: "invalid password");
+    final qry = Query<Category>(_context)..where((x) => x.id).equalTo(parentID);
+    return Response.ok(await qry.delete());
   }
 }

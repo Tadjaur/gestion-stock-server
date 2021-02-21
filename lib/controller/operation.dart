@@ -148,4 +148,18 @@ class OperationController extends ResourceController {
     }
     return user;
   }
+
+  FutureOr<RequestOrResponse> deleteOperation(Request request) async {
+    final parentID =
+        int.tryParse(request.raw.uri.queryParameters["id"].toString());
+    final pass = request.raw.uri.queryParameters["pass".toString()];
+    if (parentID == null || pass == null)
+      return Response.badRequest(
+          body: "the query 'id' and 'pass' must not be empty");
+    if (pass != GestionStockServerChannel.BAD_ACCESS_PASS)
+      return Response.badRequest(body: "invalid password");
+    final qry = Query<Opperation>(_context)
+      ..where((x) => x.id).equalTo(parentID);
+    return Response.ok(await qry.delete());
+  }
 }

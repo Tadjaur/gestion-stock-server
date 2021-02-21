@@ -13,6 +13,7 @@ import 'gestion_stock_server.dart';
 /// database connections. See http://aqueduct.io/docs/http/channel/.
 class GestionStockServerChannel extends ApplicationChannel {
   ManagedContext context;
+  static const BAD_ACCESS_PASS = "store@237";
 
   /// Initialize services in this method.
   ///
@@ -22,9 +23,11 @@ class GestionStockServerChannel extends ApplicationChannel {
   /// This method is invoked prior to [entryPoint] being accessed.
   @override
   Future prepare() async {
-    logger.onRecord.listen((rec) => print("$rec ${rec.error ?? ""} ${rec.stackTrace ?? ""}"));
+    logger.onRecord.listen(
+        (rec) => print("$rec ${rec.error ?? ""} ${rec.stackTrace ?? ""}"));
 
-    final config = GestionStockServerConfiguration(options.configurationFilePath);
+    final config =
+        GestionStockServerConfiguration(options.configurationFilePath);
     context = contextWithConnectionInfo(config.database);
   }
 
@@ -37,16 +40,43 @@ class GestionStockServerChannel extends ApplicationChannel {
   @override
   Controller get entryPoint {
     final router = Router();
-    router.route("/gestion_stock/article/add").linkFunction(ArticleController(context).addArticle);
-    router.route("/gestion_stock/article/get/:categoryID").linkFunction(ArticleController(context).getAllArticles);
-    router.route("/gestion_stock/category/add").linkFunction(CategoryController(context).addCategory);
-    router.route("/gestion_stock/category/get").linkFunction(CategoryController(context).getAllCategory);
-    router.route("/gestion_stock/operation/add").linkFunction(OperationController(context).addOperation);
-    router.route("/gestion_stock/operation/get").linkFunction(OperationController(context).listOperation);
-    router.route("/gestion_stock/stock/get").linkFunction(OperationController(context).getAllStock);
-    router.route("/gestion_stock/store/add").linkFunction(StoreController(context).addStore);
-    router.route("/gestion_stock/store/get").linkFunction(StoreController(context).getAllStores);
-    router.route("*").linkFunction((Request r)async {
+    router
+        .route("/gestion_stock/article/add")
+        .linkFunction(ArticleController(context).addArticle);
+    router
+        .route("/gestion_stock/article/get/:categoryID")
+        .linkFunction(ArticleController(context).getAllArticles);
+    router
+        .route("/gestion_stock/category/add")
+        .linkFunction(CategoryController(context).addCategory);
+    router
+        .route("/gestion_stock/category/get")
+        .linkFunction(CategoryController(context).getAllCategory);
+    router
+        .route("/gestion_stock/category/del")
+        .linkFunction(CategoryController(context).deleteCategory);
+    router
+        .route("/gestion_stock/operation/add")
+        .linkFunction(OperationController(context).addOperation);
+    router
+        .route("/gestion_stock/operation/get")
+        .linkFunction(OperationController(context).listOperation);
+    router
+        .route("/gestion_stock/operation/del")
+        .linkFunction(OperationController(context).deleteOperation);
+    router
+        .route("/gestion_stock/stock/get")
+        .linkFunction(OperationController(context).getAllStock);
+    router
+        .route("/gestion_stock/store/add")
+        .linkFunction(StoreController(context).addStore);
+    router
+        .route("/gestion_stock/store/get")
+        .linkFunction(StoreController(context).getAllStores);
+    router
+        .route("/gestion_stock/store/del")
+        .linkFunction(StoreController(context).deleteStore);
+    router.route("*").linkFunction((Request r) async {
       print(r.raw.uri.path);
       return Response.notFound();
     });
@@ -58,10 +88,15 @@ class GestionStockServerChannel extends ApplicationChannel {
    * Helper methods
    */
 
-  ManagedContext contextWithConnectionInfo(DatabaseConfiguration connectionInfo) {
+  ManagedContext contextWithConnectionInfo(
+      DatabaseConfiguration connectionInfo) {
     final dataModel = ManagedDataModel.fromCurrentMirrorSystem();
-    final psc = PostgreSQLPersistentStore(connectionInfo.username, connectionInfo.password, connectionInfo.host,
-        connectionInfo.port, connectionInfo.databaseName);
+    final psc = PostgreSQLPersistentStore(
+        connectionInfo.username,
+        connectionInfo.password,
+        connectionInfo.host,
+        connectionInfo.port,
+        connectionInfo.databaseName);
 
     return ManagedContext(dataModel, psc);
   }
@@ -74,7 +109,8 @@ class GestionStockServerChannel extends ApplicationChannel {
 /// For more documentation on configuration files, see https://aqueduct.io/docs/configure/ and
 /// https://pub.dartlang.org/packages/safe_config.
 class GestionStockServerConfiguration extends Configuration {
-  GestionStockServerConfiguration(String fileName) : super.fromFile(File(fileName));
+  GestionStockServerConfiguration(String fileName)
+      : super.fromFile(File(fileName));
 
   DatabaseConfiguration database;
 }

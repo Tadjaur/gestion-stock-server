@@ -15,3 +15,4 @@ Dart_Packages.xml
 database.yaml
 .log/
 config.yaml
+.dart_tool/
