@@ -160,6 +160,18 @@ class OperationController extends ResourceController {
       return Response.badRequest(body: "invalid password");
     final qry = Query<Opperation>(_context)
       ..where((x) => x.id).equalTo(parentID);
+    final op = await qry.fetchOne();
+    if (op != null) {
+      final stock = await (Query<Stock>(_context)
+            ..where((x) => x.article.id).equalTo(op.article.id)
+            ..where((x) => x.store.id).equalTo(op.store.id))
+          .fetchOne();
+      if (stock != null)
+        await (Query<Stock>(_context)
+              ..values.count = stock.count - op.count * op.action
+              ..where((x) => x.article.id).equalTo(op.article.id))
+            .updateOne();
+    }
     return Response.ok(await qry.delete());
   }
 }
